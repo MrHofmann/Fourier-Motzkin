@@ -424,7 +424,7 @@ void FM_ResolveConstraints(Clause &c, unsigned index)
                     right2[index] = right2.back();
                     right2.pop_back();
 
-                    c1.push_back(Relation(c[j].GetSymbol(), vars.size(), right1p, right2, vars));
+                    c1.push_back(Relation(symbol, vars.size(), right1p, right2, vars));
                 }
                 else if(left1[index] != 0 && right2[index] != 0)
                 {
@@ -435,7 +435,7 @@ void FM_ResolveConstraints(Clause &c, unsigned index)
                     left2[index] = left2.back();
                     left2.pop_back();
 
-                    c1.push_back(Relation(c[j].GetSymbol(), vars.size(), left2, right1p, vars));
+                    c1.push_back(Relation(symbol, vars.size(), left2, right1p, vars));
                 }
                 else if(right1[index] != 0 && left2[index] != 0)
                 {
@@ -446,7 +446,7 @@ void FM_ResolveConstraints(Clause &c, unsigned index)
                     right2[index] = right2.back();
                     right2.pop_back();
 
-                    c1.push_back(Relation(c[j].GetSymbol(), vars.size(), left1p, right2, vars));
+                    c1.push_back(Relation(symbol, vars.size(), left1p, right2, vars));
                 }
                 else if(right1[index] != 0 && right2[index] != 0)
                 {
@@ -457,7 +457,7 @@ void FM_ResolveConstraints(Clause &c, unsigned index)
                     left2[index] = left2.back();
                     left2.pop_back();
 
-                    c1.push_back(Relation(c[j].GetSymbol(), vars.size(), left2, left1p, vars));
+                    c1.push_back(Relation(symbol, vars.size(), left2, left1p, vars));
                 }
             }
             else if(c[k].GetSymbol() == "=")
