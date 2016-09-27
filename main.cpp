@@ -21,6 +21,11 @@ int main()
     Relation r4("<=", vars.size(), {2, 10, 2, 0}, {0, 0, 0, 4}, vars);
 
     Clause c = {r1, r2, r3, r4};
+
+//    Relation r1("<", vars.size(), {1, 0}, {0, 1}, vars);
+//    Relation r2("<", vars.size(), {1, 1}, {0, 0}, vars);
+//    Clause c = {r1, r2};
+
     DNF dnf = {c};
 
     cout << endl << "Relation vector (DNF):" << endl;
@@ -39,10 +44,10 @@ int main()
     cout << endl;
 
 
-    cout << endl << "Decomposed DNF:" << endl;
-    FM_ApplyDecomposition(dnf);
-    FM_PrintDNF(dnf);
-    cout << endl;
+//    cout << endl << "Decomposed DNF:" << endl;
+//    FM_ApplyDecomposition(dnf);
+//    FM_PrintDNF(dnf);
+//    cout << endl;
 
 
     for(unsigned i=0; i<dnf.size(); i++)
@@ -50,7 +55,7 @@ int main()
         int iteration = 0;
         bool sat = true;
 
-        while(1)
+        while(true)
         {
             cout << endl << "CLAUSE " << i+1 << " ITERATION " << ++iteration << ":" << endl
                  << "--------------------------------------------------------------" << endl;
@@ -67,9 +72,9 @@ int main()
         }
 
         if(sat)
-            cout << "SAT" << endl;
+            cout << "SAT" << endl << endl;
         else
-            cout << "UNSAT" << endl;
+            cout << "UNSAT" << endl << endl;
     }
 
 

@@ -413,7 +413,7 @@ void FM_ResolveConstraints(Clause &c, unsigned index)
             else
                 symbol = "=";
 
-            if(c[j].GetSymbol() == "=")
+            if(c[j].GetSymbol() == "=" || c[k].GetSymbol() == "=")
             {
                 if(left1[index] != 0 && left2[index] != 0)
                 {
@@ -460,53 +460,6 @@ void FM_ResolveConstraints(Clause &c, unsigned index)
                     c1.push_back(Relation(symbol, vars.size(), left2, left1p, vars));
                 }
             }
-            else if(c[k].GetSymbol() == "=")
-            {
-                if(left1[index] != 0 && left2[index] != 0)
-                {
-                    vector<int> right1p = right1;
-                    right1p[index] = right1p.back();
-                    right1p.pop_back();
-
-                    right2[index] = right2.back();
-                    right2.pop_back();
-
-                    c1.push_back(Relation(c[j].GetSymbol(), vars.size(), right2, right1p, vars));
-                }
-                else if(left1[index] != 0 && right2[index] != 0)
-                {
-                    vector<int> right1p = right1;
-                    right1p[index] = right1p.back();
-                    right1p.pop_back();
-
-                    left2[index] = left2.back();
-                    left2.pop_back();
-
-                    c1.push_back(Relation(c[j].GetSymbol(), vars.size(), left2, right1p, vars));
-                }
-                else if(right1[index] != 0 && left2[index] != 0)
-                {
-                    vector<int> left1p = left1;
-                    left1p[index] = left1p.back();
-                    left1p.pop_back();
-
-                    right2[index] = right2.back();
-                    right2.pop_back();
-
-                    c1.push_back(Relation(c[j].GetSymbol(), vars.size(), left1p, right2, vars));
-                }
-                else if(right1[index] != 0 && right2[index] != 0)
-                {
-                    vector<int> left1p = left1;
-                    left1p[index] = left1p.back();
-                    left1p.pop_back();
-
-                    left2[index] = left2.back();
-                    left2.pop_back();
-
-                    c1.push_back(Relation(c[j].GetSymbol(), vars.size(), left1p, left2, vars));
-                }
-            }
             else
             {
                 if(left1[index] != 0  &&  right2[index] != 0)
@@ -537,30 +490,6 @@ void FM_ResolveConstraints(Clause &c, unsigned index)
     }
 
     c = c1;
-}
-
-
-void FM_ResolveConstraints2()
-{
-    /*
-                dnf[i].clear();
-                for(unsigned j=0; j<great.size(); j++)
-                {
-                    for(unsigned k=0; k<low.size(); k++)
-                        if(great[j].GetSymbol() == "<=" && low[k].GetSymbol() == "<=")
-                            dnf[i].push_back(Relation("<=", great[j].GetNum(),
-                                                      great[j].GetLeftOperand(),
-                                                      low[k].GetRightOperand(),
-                                                      great[j].GetVars()));
-                        else
-                            dnf[i].push_back(Relation("<", great[j].GetNum(),
-                                                      great[j].GetLeftOperand(),
-                                                      low[k].GetRightOperand(),
-                                                      great[j].GetVars()));
-                }
-                for(unsigned j=0; j<none.size(); j++)
-                    dnf[i].push_back(none[j]);
-    */
 }
 
 
@@ -637,10 +566,11 @@ bool FM_Iterate(Clause &c)
 
 
 //-----------------NORMALIZE------------------------------------------------------
-    FM_ApplyNormalization(c);
-    FM_RemoveDuplicates(c);
-
     cout << endl << "Normalize constraints:" << endl;
+    FM_ApplyNormalization(c);
+    FM_PrintClause(c);
+
+    FM_RemoveDuplicates(c);
     FM_PrintClause(c);
     cout << endl;
 
