@@ -5,19 +5,8 @@ void FM_PrintDNF(const DNF &dnf)
 {
     cout << "{" << endl;
     for(unsigned i=0; i<dnf.size(); i++)
-    {
-        cout << "{";
-        for(unsigned j=0; j<dnf[i].size(); j++)
-        {
-            dnf[i][j].PrintRelation();
-            if(j != dnf[i].size()-1)
-                cout << " /\\ ";
-        }
-        if(i != dnf.size()-1)
-            cout << "}," << endl;
-        else
-            cout << "}" << endl;
-    }
+        FM_PrintClause(dnf[i]);
+
     cout << "}" << endl;
 }
 
@@ -32,6 +21,7 @@ void FM_PrintClause(const Clause &c)
     }
     cout << "}" << endl;
 }
+
 
 void FM_ApplyOrientation(DNF &dnf)
 {
@@ -70,187 +60,6 @@ void FM_ApplyDecomposition(DNF &dnf)
         }
 }
 
-int FM_GreatestCommonDivisor(int a, int b)
-{
-    if(b == 0)
-        return a;
-
-    if(a%b == 0)
-        return b;
-
-    return FM_GreatestCommonDivisor(b, a%b);
-}
-
-int FM_GreatestCommonDivisor(const vector<int> &v)
-{
-    int gcd = v[0];
-    for(unsigned i=1; i<v.size(); i++)
-        gcd = FM_GreatestCommonDivisor(gcd, v[i]);
-
-    return gcd;
-}
-
-void FM_ApplyNormalization(Clause &c)
-{
-    for(unsigned j=0; j<c.size(); j++)
-    {
-        vector<int> left, right, vgcd;
-        int gcd;
-
-        left = c[j].GetLeftOperand();
-        right = c[j].GetRightOperand();
-
-        for(unsigned k=0; k<left.size(); k++)
-        {
-            int dif = left[k]-right[k];
-            if((left[k] ^ right[k]) >= 0)
-            {
-                if(dif>0)
-                {
-                    left[k] = dif;
-                    right[k] = 0;
-                }
-                else
-                {
-                    right[k] = -dif;
-                    left[k] = 0;
-                }
-            }
-            else if(left[k] < 0)
-            {
-                left[k] = 0;
-                right[k] = -dif;
-            }
-            else
-            {
-                left[k] = dif;
-                right[k] = 0;
-            }
-        }
-
-        vgcd = left;
-        vgcd.insert(vgcd.end(), right.begin(), right.end());
-        gcd = FM_GreatestCommonDivisor(vgcd);
-
-        if(gcd != 0)
-            for(unsigned k=0; k<left.size(); k++)
-            {
-                left[k] /= gcd;
-                right[k] /= gcd;
-            }
-
-        c[j].SetLeftOperand(left);
-        c[j].SetRightOperand(right);
-    }
-}
-
-//MOZDA I OVA MALO ZEZA
-void FM_RemoveDuplicates(Clause &c)
-{
-    for(unsigned j=0; j<c.size(); j++)
-    {
-        vector<int> j_left = c[j].GetLeftOperand();
-        vector<int> j_right = c[j].GetRightOperand();
-
-        unsigned k = j+1;
-        while(k<c.size())
-        {
-            vector<int> k_left = c[k].GetLeftOperand();
-            vector<int> k_right = c[k].GetRightOperand();
-
-            if(c[j].GetSymbol() == c[k].GetSymbol())
-            {
-                if(c[j].GetSymbol() == "=")
-                {
-                    if((j_left == k_left && j_right == k_right) ||
-                        (j_left == k_right && j_right == k_left))
-                    {
-                        c[k] = c.back();
-                        c.pop_back();
-
-                    }
-                    else
-                        k++;
-
-                }
-                else if(j_left == k_left && j_right == k_right)
-                {
-                        c[k] = c.back();
-                        c.pop_back();
-                }
-                else
-                    k++;
-            }
-            else
-                k++;
-
-        }
-    }
-}
-
-bool FM_ExistsEquality(const Clause &c, int &k)
-{
-
-    for(unsigned i=0; i<c.size(); i++)
-        if(c[i].GetSymbol() == "=")
-        {
-            k = i;
-            return true;
-        }
-
-    k = -1;
-    return false;
-}
-
-void FM_SideFrequency(const Clause &c, vector< pair<unsigned, unsigned> > &freq)
-{
-    unsigned n = c[0].GetNum();
-
-    vector<unsigned> fleft(n, 0);
-    vector<unsigned> fright(n, 0);
-
-
-    for(unsigned i=0; i<c.size(); i++)
-    {
-        vector<int> left = c[i].GetLeftOperand();
-        vector<int> right = c[i].GetRightOperand();
-
-        for(unsigned j=0; j<n; j++)
-        {
-            if(left[j] != 0)
-                fleft[j]++;
-
-            if(right[j] != 0)
-                fright[j]++;
-        }
-    }
-
-    for(unsigned j=0; j<n; j++)
-        freq.push_back(make_pair(fleft[j], fright[j]));
-}
-
-/*bool FM_ContainsVariable(const Relation &r, unsigned i)
-{
-    if(r.GetLeftOperand()[i] != 0)
-        return true;
-    else
-        return false;
-}
-*/
-
-int FM_LeastCommonMultiple(int a, int b)
-{
-    return a*b/FM_GreatestCommonDivisor(a, b);
-}
-
-int FM_LeastCommonMultiple(const vector<int> &v)
-{
-    int lcm=1;
-    for(unsigned i=0; i<v.size(); i++)
-        lcm = FM_LeastCommonMultiple(lcm, v[i]);
-
-    return lcm;
-}
 
 //RADI ALI MORA IZBOR PROMENLJIVE JOS MALO DA SE SREDI
 bool FM_ApplyIsolation(Clause &c, unsigned &index, vector<int> &vlcm)
@@ -492,48 +301,180 @@ void FM_ResolveConstraints(Clause &c, unsigned index)
     c = c1;
 }
 
-
-bool FM_CheckSAT(const DNF &dnf)
-{
-    for(unsigned i=0; i<dnf.size(); i++)
-        for(unsigned j=0; j<dnf[i].size(); j++)
-            if(dnf[i][j].GetSymbol() == "<")
-            {
-                vector<int> left = dnf[i][j].GetLeftOperand();
-                vector<int> right = dnf[i][j].GetRightOperand();
-
-                bool ret = false;
-                for(unsigned k=0; k<left.size(); k++)
-                    if(left[k] !=0 || right[k] !=0)
-                        ret = true;
-
-                if(!ret)
-                    return false;
-            }
-
-    return true;
-}
-
-
-bool FM_CheckSAT(const Clause &c)
+void FM_ApplyNormalization(Clause &c)
 {
     for(unsigned j=0; j<c.size(); j++)
-        if(c[j].GetSymbol() == "<")
+    {
+        vector<int> left, right, vgcd;
+        int gcd;
+
+        left = c[j].GetLeftOperand();
+        right = c[j].GetRightOperand();
+
+        for(unsigned k=0; k<left.size(); k++)
         {
-            vector<int> left = c[j].GetLeftOperand();
-            vector<int> right = c[j].GetRightOperand();
-
-            bool ret = false;
-            for(unsigned k=0; k<left.size(); k++)
-                if(left[k] !=0 || right[k] !=0)
-                    ret = true;
-
-            if(!ret)
-                return false;
+            int dif = left[k]-right[k];
+            if((left[k] ^ right[k]) >= 0)
+            {
+                if(dif>0)
+                {
+                    left[k] = dif;
+                    right[k] = 0;
+                }
+                else
+                {
+                    right[k] = -dif;
+                    left[k] = 0;
+                }
+            }
+            else if(left[k] < 0)
+            {
+                left[k] = 0;
+                right[k] = -dif;
+            }
+            else
+            {
+                left[k] = dif;
+                right[k] = 0;
+            }
         }
 
-    return true;
+        vgcd = left;
+        vgcd.insert(vgcd.end(), right.begin(), right.end());
+        gcd = FM_GreatestCommonDivisor(vgcd);
+
+        if(gcd != 0)
+            for(unsigned k=0; k<left.size(); k++)
+            {
+                left[k] /= gcd;
+                right[k] /= gcd;
+            }
+
+        c[j].SetLeftOperand(left);
+        c[j].SetRightOperand(right);
+    }
 }
+
+void FM_RemoveDuplicates(Clause &c)
+{
+    for(unsigned j=0; j<c.size(); j++)
+    {
+        vector<int> j_left = c[j].GetLeftOperand();
+        vector<int> j_right = c[j].GetRightOperand();
+
+        unsigned k = j+1;
+        while(k<c.size())
+        {
+            vector<int> k_left = c[k].GetLeftOperand();
+            vector<int> k_right = c[k].GetRightOperand();
+
+            if(c[j].GetSymbol() == c[k].GetSymbol())
+            {
+                if(c[j].GetSymbol() == "=")
+                {
+                    if((j_left == k_left && j_right == k_right) ||
+                        (j_left == k_right && j_right == k_left))
+                    {
+                        c[k] = c.back();
+                        c.pop_back();
+
+                    }
+                    else
+                        k++;
+
+                }
+                else if(j_left == k_left && j_right == k_right)
+                {
+                        c[k] = c.back();
+                        c.pop_back();
+                }
+                else
+                    k++;
+            }
+            else
+                k++;
+
+        }
+    }
+}
+
+
+bool FM_ExistsEquality(const Clause &c, int &k)
+{
+
+    for(unsigned i=0; i<c.size(); i++)
+        if(c[i].GetSymbol() == "=")
+        {
+            k = i;
+            return true;
+        }
+
+    k = -1;
+    return false;
+}
+
+void FM_SideFrequency(const Clause &c, vector< pair<unsigned, unsigned> > &freq)
+{
+    unsigned n = c[0].GetNum();
+
+    vector<unsigned> fleft(n, 0);
+    vector<unsigned> fright(n, 0);
+
+
+    for(unsigned i=0; i<c.size(); i++)
+    {
+        vector<int> left = c[i].GetLeftOperand();
+        vector<int> right = c[i].GetRightOperand();
+
+        for(unsigned j=0; j<n; j++)
+        {
+            if(left[j] != 0)
+                fleft[j]++;
+
+            if(right[j] != 0)
+                fright[j]++;
+        }
+    }
+
+    for(unsigned j=0; j<n; j++)
+        freq.push_back(make_pair(fleft[j], fright[j]));
+}
+
+
+int FM_GreatestCommonDivisor(int a, int b)
+{
+    if(b == 0)
+        return a;
+
+    if(a%b == 0)
+        return b;
+
+    return FM_GreatestCommonDivisor(b, a%b);
+}
+
+int FM_GreatestCommonDivisor(const vector<int> &v)
+{
+    int gcd = v[0];
+    for(unsigned i=1; i<v.size(); i++)
+        gcd = FM_GreatestCommonDivisor(gcd, v[i]);
+
+    return gcd;
+}
+
+int FM_LeastCommonMultiple(int a, int b)
+{
+    return a*b/FM_GreatestCommonDivisor(a, b);
+}
+
+int FM_LeastCommonMultiple(const vector<int> &v)
+{
+    int lcm=1;
+    for(unsigned i=0; i<v.size(); i++)
+        lcm = FM_LeastCommonMultiple(lcm, v[i]);
+
+    return lcm;
+}
+
 
 bool FM_Iterate(Clause &c)
 {
@@ -576,3 +517,56 @@ bool FM_Iterate(Clause &c)
 
     return true;
 }
+
+bool FM_CheckSAT(const DNF &dnf)
+{
+    for(unsigned i=0; i<dnf.size(); i++)
+        for(unsigned j=0; j<dnf[i].size(); j++)
+            if(dnf[i][j].GetSymbol() == "<")
+            {
+                vector<int> left = dnf[i][j].GetLeftOperand();
+                vector<int> right = dnf[i][j].GetRightOperand();
+
+                bool ret = false;
+                for(unsigned k=0; k<left.size(); k++)
+                    if(left[k] !=0 || right[k] !=0)
+                        ret = true;
+
+                if(!ret)
+                    return false;
+            }
+
+    return true;
+}
+
+bool FM_CheckSAT(const Clause &c)
+{
+    for(unsigned j=0; j<c.size(); j++)
+        if(c[j].GetSymbol() == "<")
+        {
+            vector<int> left = c[j].GetLeftOperand();
+            vector<int> right = c[j].GetRightOperand();
+
+            bool ret = false;
+            for(unsigned k=0; k<left.size(); k++)
+                if(left[k] !=0 || right[k] !=0)
+                    ret = true;
+
+            if(!ret)
+                return false;
+        }
+
+    return true;
+}
+
+
+
+/*bool FM_ContainsVariable(const Relation &r, unsigned i)
+{
+    if(r.GetLeftOperand()[i] != 0)
+        return true;
+    else
+        return false;
+}
+*/
+
