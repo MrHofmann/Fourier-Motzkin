@@ -416,6 +416,7 @@ bool FM_ExistsEquality(const Clause &c, int &k)
     return false;
 }
 
+//FUNKCIJA RACUNA UCESTALOST POJAVLJIVANJA PROMENLJIVIH SA DESNE I LEVE STRANE RELACIJA
 void FM_SideFrequency(const Clause &c, vector< pair<unsigned, unsigned> > &freq)
 {
     unsigned n = c[0].GetNum();
