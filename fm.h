@@ -38,7 +38,7 @@ int FM_LeastCommonMultiple(int a, int b);
 
 int FM_LeastCommonMultiple(const vector<int> &v);
 
-bool FM_ApplyIsolation(Clause &c, unsigned &index, vector<int> &vlcm);
+void FM_ApplyIsolation(Clause &c, unsigned &index, vector<int> &vlcm);
 
 void FM_ComputeLCM(Clause &c, unsigned index, vector<int> vlcm);
 
@@ -48,11 +48,11 @@ void FM_ResolveConstraints(Clause &c, unsigned index);
 void FM_ResolveConstraints2();
 
 
-bool FM_CheckSAT(const DNF &dnf);
+bool FM_CheckSAT(const DNF &dnf, bool &sat);
 
-bool FM_CheckSAT(const Clause &c);
+bool FM_CheckSAT(const Clause &c, bool &sat);
 
-bool FM_Iterate(Clause &c);
+void FM_Iterate(Clause &c);
 
 
 

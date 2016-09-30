@@ -62,27 +62,15 @@ void FM_ApplyDecomposition(DNF &dnf)
 
 
 //RADI ALI MORA IZBOR PROMENLJIVE JOS MALO DA SE SREDI
-bool FM_ApplyIsolation(Clause &c, unsigned &index, vector<int> &vlcm)
+void FM_ApplyIsolation(Clause &c, unsigned &index, vector<int> &vlcm)
 {
     vector< pair<unsigned, unsigned> > freq;
     FM_SideFrequency(c, freq);
 
-    unsigned min = numeric_limits<unsigned>::max();
-    for(unsigned j=0; j<freq.size(); j++)
-    {
-        unsigned m = freq[j].first*freq[j].second;
-        if(m < min && m > 0)
-        {
-            min = m;
-            index = j;
-        }
-    }
-
-
+    //PRVO PROVERA DA LI POSTOJI JEDNAKOST KAKO BI NJU PRVO ELIMINISALI,
+    //AKO POSTOJI ONDA SE BIRA PROMENLJIVA IZ PRVE PROADJENE JEDNAKOSTI
     int k;
-    if(min == numeric_limits<unsigned>::max() && !FM_ExistsEquality(c, k))
-        return false;
-    else if(min == numeric_limits<unsigned>::max() && FM_ExistsEquality(c, k))
+    if(FM_ExistsEquality(c, k))
     {
         vector<int> left = c[k].GetLeftOperand();
         vector<int> right = c[k].GetRightOperand();
@@ -102,7 +90,25 @@ bool FM_ApplyIsolation(Clause &c, unsigned &index, vector<int> &vlcm)
             }
         }
     }
+    else
+    {
+        //INACE,
+        //PROVERA DA LI POSTOJI PROMENLJIVA KOJA SA JAVLJA SA OBE STRANE
+        //U RAZLICITIM RELACIJAMA I BIRA SE ONA KOJA PROIZVODI NAJMANJI
+        //BROJ DODATNIH RELACIJA NAKON REZOLVIRANJA RELACIJA
+        unsigned min = numeric_limits<unsigned>::max();
+        for(unsigned j=0; j<freq.size(); j++)
+        {
+            unsigned m = freq[j].first*freq[j].second;
+            if(m < min && m > 0)
+            {
+                min = m;
+                index = j;
+            }
+        }
+    }
 
+    //IZOLACIJA IZABRANE PROMENLJIVE
     for(unsigned j=0; j<c.size(); j++)
     {
         vector<int> left = c[j].GetLeftOperand();
@@ -111,7 +117,6 @@ bool FM_ApplyIsolation(Clause &c, unsigned &index, vector<int> &vlcm)
 
         int lcoef = left[index];
         int rcoef = right[index];
-
 
 
         if(left[index] != 0)
@@ -140,8 +145,6 @@ bool FM_ApplyIsolation(Clause &c, unsigned &index, vector<int> &vlcm)
         c[j] = Relation(c[j].GetSymbol(),
                         c[j].GetNum(), left, right, vars);
     }
-
-    return true;
 }
 
 void FM_ComputeLCM(Clause &c, unsigned index, vector<int> vlcm)
@@ -476,14 +479,13 @@ int FM_LeastCommonMultiple(const vector<int> &v)
 }
 
 
-bool FM_Iterate(Clause &c)
+void FM_Iterate(Clause &c)
 {
 //------------------------CHOSE VARIABLE----------------------------------------------
     unsigned index;
     vector<int> vlcm;
 
-    if(!FM_ApplyIsolation(c, index, vlcm))
-        return false;
+    FM_ApplyIsolation(c, index, vlcm);
 
     cout << endl << "Isolate variable " << c[0].GetVars()[index] << ":" << endl;
     FM_PrintClause(c);
@@ -514,10 +516,53 @@ bool FM_Iterate(Clause &c)
     FM_RemoveDuplicates(c);
     FM_PrintClause(c);
     cout << endl;
+}
+
+bool FM_CheckSAT(const DNF &dnf, bool &sat)
+{
+    for(unsigned i=0; i<dnf.size(); i++)
+        if(!FM_CheckSAT(dnf[i], sat))
+            return false;
+        else if(!sat)
+            return true;
 
     return true;
 }
 
+bool FM_CheckSAT(const Clause &c, bool &sat)
+{
+    if(c.size() == 1 && c[0].GetSymbol() == "<")
+    {
+        vector<int> left = c[0].GetLeftOperand();
+        vector<int> right = c[0].GetRightOperand();
+
+        sat = false;
+        for(unsigned i=0; i<left.size(); i++)
+            if(left[i] != 0 || right[i] != 0)
+            {
+                sat = true;
+                break;
+            }
+
+        return true;
+    }
+
+    vector< pair<unsigned, unsigned> > freq;
+    FM_SideFrequency(c, freq);
+
+    for(unsigned j=0; j<freq.size(); j++)
+        if(freq[j].first*freq[j].second != 0)
+            return false;
+
+    int k;
+    if(!FM_ExistsEquality(c, k))
+    {
+        sat = true;
+        return true;
+    }
+}
+
+/*
 bool FM_CheckSAT(const DNF &dnf)
 {
     for(unsigned i=0; i<dnf.size(); i++)
@@ -538,35 +583,4 @@ bool FM_CheckSAT(const DNF &dnf)
 
     return true;
 }
-
-bool FM_CheckSAT(const Clause &c)
-{
-    for(unsigned j=0; j<c.size(); j++)
-        if(c[j].GetSymbol() == "<")
-        {
-            vector<int> left = c[j].GetLeftOperand();
-            vector<int> right = c[j].GetRightOperand();
-
-            bool ret = false;
-            for(unsigned k=0; k<left.size(); k++)
-                if(left[k] !=0 || right[k] !=0)
-                    ret = true;
-
-            if(!ret)
-                return false;
-        }
-
-    return true;
-}
-
-
-
-/*bool FM_ContainsVariable(const Relation &r, unsigned i)
-{
-    if(r.GetLeftOperand()[i] != 0)
-        return true;
-    else
-        return false;
-}
 */
-
