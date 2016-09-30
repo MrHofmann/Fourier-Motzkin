@@ -12,28 +12,28 @@ int main()
 
 //ZADATAK SA JUNSKOG ROKA (NEZADOVOLJIVA FORMULA)
 //----------------------------------------------------------------------
-//    vars.push_back("a");
-//    vars.push_back("b");
-//    vars.push_back("c");
-//    vars.push_back("d");
+    vars.push_back("a");
+    vars.push_back("b");
+    vars.push_back("c");
+    vars.push_back("d");
 
-//    Relation r1("<", vars.size(), {1, 0, 0, 0}, {0, 5, 2, 0}, vars);
-//    Relation r2("=", vars.size(), {2, 3, 2, 0}, {0, 0, 0, 1}, vars);
-//    Relation r3(">", vars.size(), {1, 2, -2, 0}, {0, 0, 0, 3}, vars);
-//    Relation r4("<=", vars.size(), {2, 10, 2, 0}, {0, 0, 0, 4}, vars);
+    Relation r1("<", vars.size(), {1, 0, 0, 0}, {0, 5, 2, 0}, vars);
+    Relation r2("=", vars.size(), {2, 3, 2, 0}, {0, 0, 0, 1}, vars);
+    Relation r3(">", vars.size(), {1, 2, -2, 0}, {0, 0, 0, 3}, vars);
+    Relation r4("<=", vars.size(), {2, 10, 2, 0}, {0, 0, 0, 4}, vars);
 
-//    Clause c = {r1, r2, r3, r4};
+    Clause c = {r1, r2, r3, r4};
 //----------------------------------------------------------------------
 
 //PROST PRIMER ZADOVOLJIVE FORMULE
 //----------------------------------------------------------------------
-    vars.push_back("a");
-    vars.push_back("b");
+//    vars.push_back("a");
+//    vars.push_back("b");
 
-    Relation r1("<=", vars.size(), {1, 0}, {0, 1}, vars);
-    Relation r2("<=", vars.size(), {1, 1}, {0, 0}, vars);
+//    Relation r1("<=", vars.size(), {1, 0}, {0, 1}, vars);
+//    Relation r2("<=", vars.size(), {1, 1}, {0, 0}, vars);
 
-    Clause c = {r1, r2};
+//    Clause c = {r1, r2};
 //----------------------------------------------------------------------
 
 
@@ -50,13 +50,13 @@ int main()
     cout << endl;
 
 
-    cout << endl << "Decomposed DNF:" << endl;
-    FM_ApplyDecomposition(dnf);
-    FM_PrintDNF(dnf);
-    cout << endl;
+//    cout << endl << "Decomposed DNF:" << endl;
+//    FM_ApplyDecomposition(dnf);
+//    FM_PrintDNF(dnf);
+//    cout << endl;
 
 
-    bool sat = true;
+    bool sat;
     for(unsigned i=0; i<dnf.size(); i++)
     {
         int iteration = 0;
