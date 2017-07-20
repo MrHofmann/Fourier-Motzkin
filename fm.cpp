@@ -30,14 +30,14 @@ void FM_ApplyOrientation(DNF &dnf)
         {
             if(dnf[i][j].GetSymbol() == ">=")
             {
-                dnf[i][j] = Relation("<=", dnf[i][j].GetNum(),
+                dnf[i][j] = Relation("<=",
                                      dnf[i][j].GetRightOperand(),
                                      dnf[i][j].GetLeftOperand(),
                                      dnf[i][j].GetVars());
             }
             else if(dnf[i][j].GetSymbol() == ">")
             {
-                dnf[i][j] = Relation("<", dnf[i][j].GetNum(),
+                dnf[i][j] = Relation("<",
                                      dnf[i][j].GetRightOperand(),
                                      dnf[i][j].GetLeftOperand(),
                                      dnf[i][j].GetVars());
@@ -142,8 +142,7 @@ void FM_ApplyIsolation(Clause &c, unsigned &index, vector<int> &vlcm)
                 }
         }
 
-        c[j] = Relation(c[j].GetSymbol(),
-                        c[j].GetNum(), left, right, vars);
+        c[j] = Relation(c[j].GetSymbol(), left, right, vars);
     }
 }
 
@@ -168,8 +167,7 @@ void FM_ComputeLCM(Clause &c, unsigned index, vector<int> vlcm)
                 right[k] *= lcm/left[index];
             left[index] *= lcm/left[index];
 
-            low.push_back(Relation(c[j].GetSymbol(),
-                                   c[j].GetNum(), left, right, vars));
+            low.push_back(Relation(c[j].GetSymbol(), left, right, vars));
 
         }
         else if(right[index] != 0)
@@ -178,14 +176,12 @@ void FM_ComputeLCM(Clause &c, unsigned index, vector<int> vlcm)
                 left[k] *= lcm/right[index];
             right[index] *= lcm/right[index];
 
-            great.push_back(Relation(c[j].GetSymbol(),
-                                     c[j].GetNum(), left, right, vars));
+            great.push_back(Relation(c[j].GetSymbol(), left, right, vars));
         }
         else
-            none.push_back(Relation(c[j].GetSymbol(),
-                                    c[j].GetNum(), left, right, vars));
+            none.push_back(Relation(c[j].GetSymbol(), left, right, vars));
 
-        c[j] = Relation(c[j].GetSymbol(), c[j].GetNum(), left, right, vars);
+        c[j] = Relation(c[j].GetSymbol(), left, right, vars);
     }
 }
 
@@ -209,7 +205,7 @@ void FM_ResolveConstraints(Clause &c, unsigned index)
             right1[index] = right1.back();
             right1.pop_back();
 
-            c1.push_back(Relation(c[j].GetSymbol(), vars.size(), left1, right1, vars));
+            c1.push_back(Relation(c[j].GetSymbol(), left1, right1, vars));
             continue;
         }
 
@@ -236,7 +232,7 @@ void FM_ResolveConstraints(Clause &c, unsigned index)
                     right2[index] = right2.back();
                     right2.pop_back();
 
-                    c1.push_back(Relation(symbol, vars.size(), right1p, right2, vars));
+                    c1.push_back(Relation(symbol, right1p, right2, vars));
                 }
                 else if(left1[index] != 0 && right2[index] != 0)
                 {
@@ -247,7 +243,7 @@ void FM_ResolveConstraints(Clause &c, unsigned index)
                     left2[index] = left2.back();
                     left2.pop_back();
 
-                    c1.push_back(Relation(symbol, vars.size(), left2, right1p, vars));
+                    c1.push_back(Relation(symbol, left2, right1p, vars));
                 }
                 else if(right1[index] != 0 && left2[index] != 0)
                 {
@@ -258,7 +254,7 @@ void FM_ResolveConstraints(Clause &c, unsigned index)
                     right2[index] = right2.back();
                     right2.pop_back();
 
-                    c1.push_back(Relation(symbol, vars.size(), left1p, right2, vars));
+                    c1.push_back(Relation(symbol, left1p, right2, vars));
                 }
                 else if(right1[index] != 0 && right2[index] != 0)
                 {
@@ -269,7 +265,7 @@ void FM_ResolveConstraints(Clause &c, unsigned index)
                     left2[index] = left2.back();
                     left2.pop_back();
 
-                    c1.push_back(Relation(symbol, vars.size(), left2, left1p, vars));
+                    c1.push_back(Relation(symbol, left2, left1p, vars));
                 }
             }
             else
@@ -283,7 +279,7 @@ void FM_ResolveConstraints(Clause &c, unsigned index)
                     left2[index] = left2.back();
                     left2.pop_back();
 
-                    c1.push_back(Relation(symbol, vars.size(), left2, right1p, vars));
+                    c1.push_back(Relation(symbol, left2, right1p, vars));
                 }
                 else if(right1[index] != 0  &&  left2[index] != 0)
                 {
@@ -294,7 +290,7 @@ void FM_ResolveConstraints(Clause &c, unsigned index)
                     right2[index] = right2.back();
                     right2.pop_back();
 
-                    c1.push_back(Relation(symbol, vars.size(), left1p, right2, vars));
+                    c1.push_back(Relation(symbol, left1p, right2, vars));
                 }
             }
         }
@@ -419,7 +415,7 @@ bool FM_ExistsEquality(const Clause &c, int &k)
 //FUNKCIJA RACUNA UCESTALOST POJAVLJIVANJA PROMENLJIVIH SA DESNE I LEVE STRANE RELACIJA
 void FM_SideFrequency(const Clause &c, vector< pair<unsigned, unsigned> > &freq)
 {
-    unsigned n = c[0].GetNum();
+    unsigned n = c[0].GetVars().size();
 
     vector<unsigned> fleft(n, 0);
     vector<unsigned> fright(n, 0);
@@ -482,7 +478,7 @@ int FM_LeastCommonMultiple(const vector<int> &v)
 
 void FM_Iterate(Clause &c)
 {
-//------------------------CHOSE VARIABLE----------------------------------------------
+//---------------------------------CHOSE VARIABLE-------------------------------------//
     unsigned index;
     vector<int> vlcm;
 
@@ -493,7 +489,7 @@ void FM_Iterate(Clause &c)
     cout << endl;
 
 
-//-------------------------------EQUALIZE COEFS--------------------------------------
+//----------------------------------EQUALIZE COEFS------------------------------------//
     FM_ComputeLCM(c, index, vlcm);
 
     cout << endl << "Least common multiple:" << endl;
@@ -501,7 +497,7 @@ void FM_Iterate(Clause &c)
     cout << endl;
 
 
-//--------------RESOLVE CONSTRAINTS-----------------------------------------------
+//---------------------------------RESOLVE CONSTRAINTS--------------------------------//
     FM_ResolveConstraints(c, index);
 
     cout << endl << "Resolve constraints:" << endl;
@@ -509,7 +505,7 @@ void FM_Iterate(Clause &c)
     cout << endl;
 
 
-//-----------------NORMALIZE------------------------------------------------------
+//-------------------------------------NORMALIZE--------------------------------------//
     cout << endl << "Normalize constraints:" << endl;
     FM_ApplyNormalization(c);
     FM_PrintClause(c);

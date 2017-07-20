@@ -1,13 +1,8 @@
 #include "relation.h"
 
-string Relation::GetSymbol() const
+PredicateSymbol Relation::GetSymbol() const
 {
     return _symbol;
-}
-
-unsigned Relation::GetNum() const
-{
-    return _num;
 }
 
 vector<int> Relation::GetLeftOperand() const
@@ -20,7 +15,7 @@ vector<int> Relation::GetRightOperand() const
     return _right;
 }
 
-vector<string> Relation::GetVars() const
+vector<Variable> Relation::GetVars() const
 {
     return _vars;
 }
@@ -76,7 +71,7 @@ void Relation::PrintRelation() const
 }
 
 
-void Relation::SetSymbol(const string s)
+void Relation::SetSymbol(const PredicateSymbol & s)
 {
     _symbol = s;
 }

@@ -3,33 +3,35 @@
 
 #include <iostream>
 #include <vector>
+#include <string>
 
 using namespace std;
 
+
+typedef string PredicateSymbol;
+typedef string Variable;
+
 class Relation{
 private:
-    string _symbol;
-    unsigned _num;
+    PredicateSymbol _symbol;
     vector<int> _left;
     vector<int> _right;
-    vector<string> _vars;
+    vector<Variable> _vars;
 
 public:
-    Relation(string symbol, unsigned num,
-             vector<int> left, vector<int> right, vector<string> vars)
-        : _symbol(symbol), _num(num), _left(left), _right(right), _vars(vars)
+    Relation(PredicateSymbol symbol, vector<int> left, vector<int> right, vector<Variable> vars)
+        : _symbol(symbol), _left(left), _right(right), _vars(vars)
     {}
 
-    string GetSymbol() const;
+    PredicateSymbol GetSymbol() const;
     unsigned GetNum() const;
     vector<int> GetLeftOperand() const;
     vector<int> GetRightOperand() const;
-    vector<string> GetVars() const;
+    vector<Variable> GetVars() const;
 
     void PrintRelation() const;
 
-    void SetSymbol(const string s);
-//    void SetNum(unsigned n);
+    void SetSymbol(const PredicateSymbol & s);
     void SetLeftOperand(const vector<int> ops);
     void SetRightOperand(const vector<int> ops);
 //    void SetVars(const vector<string> vars);

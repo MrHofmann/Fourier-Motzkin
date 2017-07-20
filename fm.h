@@ -7,6 +7,7 @@
 
 using namespace std;
 
+
 typedef vector<Relation> Clause;
 typedef vector<Clause> DNF;
 

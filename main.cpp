@@ -8,7 +8,7 @@ using namespace std;
 
 int main()
 {
-    vector<string> vars;
+    vector<PredicateSymbol> vars;
 
 //ZADATAK SA JUNSKOG ROKA (NEZADOVOLJIVA FORMULA)
 //----------------------------------------------------------------------
@@ -17,12 +17,12 @@ int main()
     vars.push_back("c");
     vars.push_back("d");
 
-    Relation r1("<", vars.size(), {1, 0, 0, 0}, {0, 5, 2, 0}, vars);
-    Relation r2("=", vars.size(), {2, 3, 2, 0}, {0, 0, 0, 1}, vars);
-    Relation r3(">", vars.size(), {1, 2, -2, 0}, {0, 0, 0, 3}, vars);
-    Relation r4("<=", vars.size(), {2, 10, 2, 0}, {0, 0, 0, 4}, vars);
+    Relation r1("<", {1, 0, 0, 0}, {0, 5, 2, 0}, vars);
+    Relation r2("=", {2, 3, 2, 0}, {0, 0, 0, 1}, vars);
+    Relation r3(">", {1, 2, -2, 0}, {0, 0, 0, 3}, vars);
+    Relation r4("<=", {2, 10, 2, 0}, {0, 0, 0, 4}, vars);
 
-    Clause c = {r1, r2, r3, r4};
+    Clause c1 = {r1, r2, r3, r4};
 //----------------------------------------------------------------------
 
 //PROST PRIMER ZADOVOLJIVE FORMULE
@@ -30,14 +30,14 @@ int main()
 //    vars.push_back("a");
 //    vars.push_back("b");
 
-//    Relation r1("<=", vars.size(), {1, 0}, {0, 1}, vars);
-//    Relation r2("<=", vars.size(), {1, 1}, {0, 0}, vars);
+//    Relation r5("<=", {1, 0}, {0, 1}, vars);
+//    Relation r6("<=", {1, 1}, {0, 0}, vars);
 
-//    Clause c = {r1, r2};
+//    Clause c2 = {r5, r6};
 //----------------------------------------------------------------------
 
 
-    DNF dnf = {c};
+    DNF dnf = {c1};
 
     cout << endl << "Relation vector (DNF):" << endl;
     FM_PrintDNF(dnf);
